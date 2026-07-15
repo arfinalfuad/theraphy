@@ -50,6 +50,11 @@ import {
 } from "lucide-react";
 
 import PatientDashboard from "./components/PatientDashboard";
+import TherapistDashboard from "./components/TherapistDashboard";
+import AdminDashboard from "./components/AdminDashboard";
+import LoginScreen from "./components/LoginScreen";
+import PublicLandingPage, { LandingPageConfig } from "./components/PublicLandingPage";
+import { supabase } from "./supabaseClient";
 
 // Interfaces
 interface Therapist {
@@ -237,6 +242,79 @@ export default function App() {
   // Hash Routing State
   const [currentHash, setCurrentHash] = useState<string>(window.location.hash || "#/");
 
+  // Authentication State
+  const [currentUser, setCurrentUser] = useState<{ email: string; role: "patient" | "therapist" | "admin" } | null>(() => {
+    const saved = localStorage.getItem("doctime_current_user");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  // Dynamic No-code Page Config with expanded Shopify attributes
+  const [pageConfig, setPageConfig] = useState<LandingPageConfig>(() => {
+    const saved = localStorage.getItem("doctime_page_config");
+    return saved ? JSON.parse(saved) : {
+      heroTitle: "স্পিচ থেরাপি ল্যাব\nশিশুর সুন্দর ভবিষ্যৎ গড়ার বিশ্বস্ত ঠিকানা",
+      heroDesc: "আমাদের ওয়ান-টু-ওয়ান আধুনিক ক্লিনিক্যাল থেরাপি, চমৎকার বাংলা এএসি (AAC) কথা বলা বোর্ড এবং দেশের স্বনামধন্য অকুপেশনাল ও আচরণ থেরাপিস্টদের নিখুঁত তত্ত্বাবধানে আপনার আদরের শিশুর সুস্থ স্বাভাবিক বিকাশে আমরা সদা প্রস্তুত।",
+      heroImage: "",
+      themeColor: "#0ea5e9",
+      themeColorSecondary: "#ec4899",
+      themeBgColor: "#f8fafc",
+      themeTextColor: "#0f172a",
+      fontFamily: "Inter",
+      youtubeEmbed: "https://www.youtube.com/embed/gAnS9xZ5W0E",
+      ctaText: "অ্যাপয়েন্টমেন্ট বুকিং শুরু করুন",
+      ctaUrl: "#/patient",
+      sectionsOrder: ["hero", "services", "therapists", "video", "aac", "custom_code", "contact", "footer"],
+      sectionsVisibility: {
+        hero: true,
+        services: true,
+        therapists: true,
+        video: true,
+        aac: true,
+        custom_code: true,
+        contact: true,
+        footer: true
+      },
+      customCode: "",
+      servicesTitle: "আমাদের ৮টি বিশেষ সেবাসমূহ",
+      servicesDesc: "বিশেষ অটিস্টিক ও স্পিচ-ডিলেড শিশুদের দ্রুত ভাষা অর্জন, মনোযোগ বৃদ্ধি ও শারীরিক-মানসিক বিকাশের জন্য প্রস্তুতকৃত আমাদের আধুনিক ল্যাব মেথডস।",
+      therapistsTitle: "আমাদের বিশেষজ্ঞ প্যানেল",
+      therapistsDesc: "বিশেষজ্ঞ স্পিচ ল্যাঙ্গুয়েজ প্যাথলজিস্ট এবং সার্টিফাইড অকুপেশনাল থেরাপিস্টদের সাথে ওয়ান-টু-ওয়ান পরামর্শ করুন।",
+      contactTitle: "অভিভাবক পরামর্শ ও সেশন অনুরোধ ফর্ম",
+      contactDesc: "আপনার শিশুর বিশেষ প্রয়োজনে ফ্রি কাউন্সিলিং অথবা সেশন বুকিং করতে নিচের তথ্য দিয়ে অনুরোধ জানান।",
+      logoText: "DocTime Speech Lab",
+      phoneText: "+৮৮০ ১৭০০-০০০০০০"
+    };
+  });
+
+  // Fetch site configuration from Supabase site_settings table on initial mount
+  useEffect(() => {
+    async function loadDbConfig() {
+      try {
+        const { data, error } = await supabase
+          .from("site_settings")
+          .select("config")
+          .eq("id", "landing_page")
+          .single();
+
+        if (error) {
+          console.log("Supabase site_settings fetch error or table does not exist yet (using local state fallback):", error);
+        } else if (data && data.config) {
+          setPageConfig(prev => ({
+            ...prev,
+            ...data.config,
+            // Deep merge safety
+            sectionsOrder: data.config.sectionsOrder || prev.sectionsOrder,
+            sectionsVisibility: data.config.sectionsVisibility || prev.sectionsVisibility
+          }));
+          console.log("Supabase site_settings successfully loaded!");
+        }
+      } catch (err) {
+        console.warn("Error fetching Supabase site settings:", err);
+      }
+    }
+    loadDbConfig();
+  }, []);
+
   // Load customizable data from localStorage or fallback
   const [services, setServices] = useState<ServiceCard[]>(() => {
     const saved = localStorage.getItem("doctime_services");
@@ -272,6 +350,15 @@ export default function App() {
   const navigateToHash = (hash: string) => {
     window.location.hash = hash;
     setCurrentHash(hash);
+
+    // Auto login for seamless testing via Developer switcher!
+    if (hash === "#/patient") {
+      setCurrentUser({ email: "arion-demo@speechlab.com", role: "patient" });
+    } else if (hash === "#/therapist") {
+      setCurrentUser({ email: "shaila-demo@speechlab.com", role: "therapist" });
+    } else if (hash === "#/admin") {
+      setCurrentUser({ email: "admin-demo@speechlab.com", role: "admin" });
+    }
   };
 
   // Synchronize dynamic lists to localStorage
@@ -290,6 +377,18 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("doctime_prescriptions", JSON.stringify(prescriptions));
   }, [prescriptions]);
+
+  useEffect(() => {
+    localStorage.setItem("doctime_page_config", JSON.stringify(pageConfig));
+  }, [pageConfig]);
+
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem("doctime_current_user", JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem("doctime_current_user");
+    }
+  }, [currentUser]);
 
   // Global details / modal state
   const [selectedTherapistForModal, setSelectedTherapistForModal] = useState<Therapist | null>(null);
@@ -662,6 +761,16 @@ export default function App() {
       
       {/* 1. VISITOR / DOC-TIME STYLE LANDING PAGE ( #/ or Empty) */}
       {(currentHash === "#/" || currentHash === "") && (
+        <PublicLandingPage
+          pageConfig={pageConfig}
+          services={services}
+          therapists={therapists}
+          onNavigate={navigateToHash}
+          onSelectTherapist={(therapist) => setSelectedTherapistForModal(therapist)}
+        />
+      )}
+
+      {false && (currentHash === "#/" || currentHash === "") && (
         <div className="flex-1 flex flex-col">
           
           {/* Public Medical Navbar Header */}
@@ -695,7 +804,7 @@ export default function App() {
                 <span className="hidden sm:inline">+৮৮০ ১৭০০-০০০০০০</span>
               </a>
               <button 
-                onClick={() => navigateToHash("#/patient")}
+                onClick={() => navigateToHash("#/login")}
                 className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-xs cursor-pointer transition-all"
               >
                 লগইন করুন
@@ -719,15 +828,12 @@ export default function App() {
                   <span>স্পিচ থেরাপি ও অটিজম ডেভেলপমেন্ট কেয়ার সেন্টার</span>
                 </div>
                 
-                <h1 className="text-3xl sm:text-5xl font-black font-display text-slate-950 leading-tight">
-                  স্পিচ থেরাপি ল্যাব <br />
-                  <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-600 via-rose-500 to-emerald-600">
-                    শিশুর সুন্দর ভবিষ্যৎ গড়ার বিশ্বস্ত ঠিকানা
-                  </span>
+                <h1 className="text-3xl sm:text-5xl font-black font-display text-slate-950 leading-tight whitespace-pre-line">
+                  {pageConfig.heroTitle}
                 </h1>
 
-                <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl">
-                  আমাদের ওয়ান-টু-ওয়ান আধুনিক ক্লিনিক্যাল থেরাপি, চমৎকার বাংলা এএসি (AAC) কথা বলা বোর্ড এবং দেশের স্বনামধন্য অকুপেশনাল ও আচরণ থেরাপিস্টদের নিখুঁত তত্ত্বাবধানে আপনার আদরের শিশুর সুস্থ স্বাভাবিক বিকাশে আমরা সদা প্রস্তুত।
+                <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl whitespace-pre-line">
+                  {pageConfig.heroDesc}
                 </p>
 
                 <div className="flex flex-wrap gap-4 pt-2">
@@ -910,44 +1016,98 @@ export default function App() {
         </div>
       )}
 
+      {/* LOGIN ROUTE */}
+      {currentHash === "#/login" && (
+        <LoginScreen 
+          onLoginSuccess={(role, email) => {
+            setCurrentUser({ role, email });
+            triggerToast(`${role === "admin" ? "এডমিন" : role === "therapist" ? "থেরাপিস্ট" : "পেশেন্ট"} হিসেবে সফলভাবে লগইন হয়েছে!`);
+            navigateToHash(role === "admin" ? "#/admin" : role === "therapist" ? "#/therapist" : "#/patient");
+          }}
+          onNavigateBack={() => navigateToHash("#/")}
+        />
+      )}
+
       {/* 2. PATIENT DASHBOARD ROUTE ( #/patient ) */}
       {currentHash === "#/patient" && (
-        <div className="flex-1 flex flex-col">
-          {/* Dashboard specific Header bar */}
-          <header className="bg-white border-b border-slate-200/80 px-6 sm:px-12 py-3.5 flex items-center justify-between shadow-xs shrink-0">
-            <div className="flex items-center gap-2.5">
-              <button 
-                onClick={() => navigateToHash("#/")}
-                className="hover:bg-slate-100 p-1.5 rounded-lg transition-colors cursor-pointer mr-1"
-                title="হোম পেজে ফিরে যান"
-              >
-                <Home className="w-5 h-5 text-slate-600" />
-              </button>
-              <span className="font-black text-slate-900 text-sm sm:text-base">পেশেন্ট অ্যান্ড প্যারেন্ট পোর্টাল</span>
-              <span className="text-xs bg-emerald-50 text-emerald-700 font-bold px-2.5 py-0.5 rounded-full border border-emerald-100 uppercase tracking-wider">
-                আরিয়ান রহমান
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-400 font-medium hidden sm:inline">পেশেন্ট আইডি: <strong className="text-slate-800 font-mono font-bold">a0000000-0001</strong></span>
-              <button 
-                onClick={() => navigateToHash("#/")}
-                className="bg-rose-50 text-rose-600 hover:bg-rose-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
-              >
-                লগআউট
-              </button>
-            </div>
-          </header>
-
-          <div className="flex-1 overflow-y-auto">
-            {/* Render the full custom PatientDashboard component */}
-            <PatientDashboard />
+        !currentUser ? (
+          <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6">
+            <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center text-amber-500 text-3xl mb-4 animate-bounce">⚠️</div>
+            <h3 className="text-lg font-black text-slate-800">লগইন প্রয়োজন</h3>
+            <p className="text-xs text-slate-500 mt-1 max-w-xs text-center">পেশেন্ট ড্যাশবোর্ড ব্যবহারের জন্য দয়া করে আপনার অ্যাকাউন্ট দিয়ে প্রবেশ করুন।</p>
+            <button 
+              onClick={() => navigateToHash("#/login")}
+              className="mt-4 bg-sky-500 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl hover:bg-sky-600 transition-all cursor-pointer shadow-sm"
+            >
+              লগইন পেজে যান
+            </button>
           </div>
-        </div>
+        ) : (
+          <div className="flex-1 flex flex-col">
+            {/* Dashboard specific Header bar */}
+            <header className="bg-white border-b border-slate-200/80 px-6 sm:px-12 py-3.5 flex items-center justify-between shadow-xs shrink-0">
+              <div className="flex items-center gap-2.5">
+                <button 
+                  onClick={() => navigateToHash("#/")}
+                  className="hover:bg-slate-100 p-1.5 rounded-lg transition-colors cursor-pointer mr-1"
+                  title="হোম পেজে ফিরে যান"
+                >
+                  <Home className="w-5 h-5 text-slate-600" />
+                </button>
+                <span className="font-black text-slate-900 text-sm sm:text-base">পেশেন্ট অ্যান্ড প্যারেন্ট পোর্টাল</span>
+                <span className="text-xs bg-emerald-50 text-emerald-700 font-bold px-2.5 py-0.5 rounded-full border border-emerald-100 uppercase tracking-wider">
+                  আরিয়ান রহমান
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-400 font-medium hidden sm:inline">ইমেইল: <strong className="text-slate-800 font-mono font-bold">{currentUser.email}</strong></span>
+                <button 
+                  onClick={() => {
+                    setCurrentUser(null);
+                    navigateToHash("#/");
+                  }}
+                  className="bg-rose-50 text-rose-600 hover:bg-rose-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                >
+                  লগআউট
+                </button>
+              </div>
+            </header>
+
+            <div className="flex-1 overflow-y-auto">
+              <PatientDashboard onNavigate={navigateToHash} prescriptions={prescriptions} />
+            </div>
+          </div>
+        )
       )}
 
       {/* 3. THERAPIST PORTAL ROUTE ( #/therapist ) */}
       {currentHash === "#/therapist" && (
+        !currentUser ? (
+          <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6">
+            <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center text-amber-500 text-3xl mb-4 animate-bounce">⚠️</div>
+            <h3 className="text-lg font-black text-slate-800">লগইন প্রয়োজন</h3>
+            <p className="text-xs text-slate-500 mt-1 max-w-xs text-center">Therapist ড্যাশবোর্ড ব্যবহারের জন্য দয়া করে আপনার অ্যাকাউন্ট দিয়ে প্রবেশ করুন।</p>
+            <button 
+              onClick={() => navigateToHash("#/login")}
+              className="mt-4 bg-sky-500 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl hover:bg-sky-600 transition-all cursor-pointer shadow-sm"
+            >
+              লগইন পেজে যান
+            </button>
+          </div>
+        ) : (
+          <TherapistDashboard 
+            activeTherapist={activeTherapist}
+            appointments={appointments}
+            prescriptions={prescriptions}
+            onAddPrescription={(newRx) => setPrescriptions(prev => [newRx, ...prev])}
+            onNavigate={navigateToHash}
+            triggerToast={triggerToast}
+          />
+        )
+      )}
+
+      {/* DISABLED_OLD_THERAPIST_BLOCK */}
+      {currentHash === "#/therapist_disabled" && (
         <div className="flex-1 flex flex-col bg-slate-100">
           
           {/* Therapist Header */}
@@ -1312,6 +1472,54 @@ export default function App() {
 
       {/* 4. ADMIN DASHBOARD ROUTE ( #/admin ) */}
       {currentHash === "#/admin" && (
+        !currentUser ? (
+          <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6">
+            <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center text-amber-500 text-3xl mb-4 animate-bounce">⚠️</div>
+            <h3 className="text-lg font-black text-slate-800">লগইন প্রয়োজন</h3>
+            <p className="text-xs text-slate-500 mt-1 max-w-xs text-center">Admin কনসোল ব্যবহারের জন্য দয়া করে আপনার অ্যাকাউন্ট দিয়ে প্রবেশ করুন।</p>
+            <button 
+              onClick={() => navigateToHash("#/login")}
+              className="mt-4 bg-sky-500 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl hover:bg-sky-600 transition-all cursor-pointer shadow-sm"
+            >
+              লগইন পেজে যান
+            </button>
+          </div>
+        ) : (
+          <AdminDashboard 
+            therapists={therapists}
+            onAddTherapist={(newTherapist) => setTherapists(prev => [...prev, newTherapist])}
+            onDeleteTherapist={(id, name) => {
+              setTherapists(prev => prev.filter(t => t.id !== id));
+              triggerToast(`থেরাপিস্ট ${name} সফলভাবে অপসারিত হয়েছেন!`);
+            }}
+            onNavigate={navigateToHash}
+            pageConfig={pageConfig}
+            onSavePageConfig={async (newConfig) => {
+              setPageConfig(newConfig);
+              localStorage.setItem("doctime_page_config", JSON.stringify(newConfig));
+              try {
+                const { error } = await supabase.from("site_settings").upsert({
+                  id: "landing_page",
+                  config: newConfig,
+                  updated_at: new Date().toISOString()
+                });
+                if (error) {
+                  console.warn("Supabase site_settings sync issue:", error);
+                } else {
+                  console.log("Supabase site_settings synchronized successfully!");
+                }
+              } catch (err) {
+                console.warn("DB offline or connection issue:", err);
+              }
+              triggerToast("ল্যান্ডিং পেজ কাস্টমাইজেশন সফলভাবে সেভ করা হয়েছে!");
+            }}
+            triggerToast={triggerToast}
+          />
+        )
+      )}
+
+      {/* DISABLED_OLD_ADMIN_BLOCK */}
+      {currentHash === "#/admin_disabled" && (
         <div className="flex-1 flex flex-col">
           
           {/* Admin Header */}

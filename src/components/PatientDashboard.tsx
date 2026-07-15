@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { 
+  Home,
   Calendar, 
   FileText, 
   TrendingUp, 
@@ -58,7 +59,25 @@ interface ProgressSummary {
   active_milestone: string;
 }
 
-export default function PatientDashboard() {
+interface Prescription {
+  id: string;
+  date: string;
+  patient_name: string;
+  age: string;
+  diagnosis: string;
+  homework: string;
+  next_visit: string;
+  notes: string;
+  therapist_name: string;
+}
+
+interface PatientDashboardProps {
+  onNavigate?: (hash: string) => void;
+  prescriptions?: Prescription[];
+}
+
+export default function PatientDashboard({ onNavigate, prescriptions = [] }: PatientDashboardProps) {
+  const [sensoryFriendly, setSensoryFriendly] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([
     {
       id: "1",
@@ -405,29 +424,70 @@ export default function PatientDashboard() {
   const practicePercent = Math.min(100, Math.round((progress.practiced_minutes / progress.daily_goal_minutes) * 100));
 
   return (
-    <div className="bg-slate-50 min-h-screen py-8 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className={`bg-slate-50 min-h-screen py-8 px-4 sm:px-6 lg:px-8 font-sans transition-all duration-500 ${sensoryFriendly ? "sepia-[30%] brightness-[75%] contrast-[95%] saturate-[75%]" : ""}`}>
       <div className="max-w-7xl mx-auto space-y-8">
+
+        {sensoryFriendly && (
+          <div className="bg-amber-100 border border-amber-200 p-4 rounded-2xl text-xs text-amber-900 font-extrabold flex items-center gap-2.5 animate-pulse shadow-xs">
+            <span className="text-base">🛡️</span>
+            <span>সংবেদনশীলতা সুরক্ষা সক্রিয় (Sensory Overload Protection Active) - অতিরিক্ত স্ক্রিন লাইট ও ক্ষতিকর নীল আলো কমানো হয়েছে।</span>
+          </div>
+        )}
         
         {/* Upper Brand Info & Greeting Bar */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold">
-              <Activity className="w-3.5 h-3.5 text-indigo-600" />
-              <span>রোগীর স্বাস্থ্য ও ড্যাশবোর্ড ওভারভিউ</span>
+          <div className="flex items-start gap-4">
+            {onNavigate && (
+              <button
+                onClick={() => onNavigate("#/")}
+                className="bg-slate-100 hover:bg-slate-200 p-2.5 rounded-xl border border-slate-250 text-slate-700 transition-all cursor-pointer mt-1"
+                title="হোম পেজে ফিরে যান"
+              >
+                <Home className="w-5 h-5" />
+              </button>
+            )}
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold">
+                <Activity className="w-3.5 h-3.5 text-indigo-600" />
+                <span>রোগীর স্বাস্থ্য ও ড্যাশবোর্ড ওভারভিউ</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                স্বাগতম, প্রিয় ব্যবহারকারী! <Sparkles className="w-6 h-6 text-yellow-500 animate-spin" style={{ animationDuration: '3s' }} />
+              </h1>
+              <p className="text-sm text-slate-500">
+                আপনার স্পিচ থেরাপি যাত্রা অত্যন্ত সফল হচ্ছে। এখানে আপনার আজকের প্র্যাকটিস গোল এবং পরবর্তী সেশনের শিডিউল রয়েছে।
+              </p>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-              স্বাগতম, প্রিয় ব্যবহারকারী! <Sparkles className="w-6 h-6 text-yellow-500 animate-spin" style={{ animationDuration: '3s' }} />
-            </h1>
-            <p className="text-sm text-slate-500">
-              আপনার স্পিচ থেরাপি যাত্রা অত্যন্ত সফল হচ্ছে। এখানে আপনার আজকের প্র্যাকটিস গোল এবং পরবর্তী সেশনের শিডিউল রয়েছে।
-            </p>
           </div>
 
-          <div className="flex flex-col items-end gap-1 text-right">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">কানেকশন স্ট্যাটাস</span>
-            <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
-              <span className="text-xs font-bold text-slate-700">{dbStatus || "লোকাল ডেমো মোডে সক্রিয়"}</span>
+          <div className="flex flex-wrap items-center gap-4 text-right">
+            {/* Sensory Friendly Button Toggle */}
+            <button
+              onClick={() => {
+                setSensoryFriendly(!sensoryFriendly);
+                if (!sensoryFriendly) {
+                  setSpeechRate(0.7);
+                  setSpeechPitch(0.9);
+                } else {
+                  setSpeechRate(0.85);
+                  setSpeechPitch(1.1);
+                }
+              }}
+              className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer shadow-xs ${
+                sensoryFriendly 
+                  ? "bg-amber-400 hover:bg-amber-500 text-slate-950" 
+                  : "bg-slate-900 hover:bg-slate-800 text-white"
+              }`}
+            >
+              <span>{sensoryFriendly ? "🛡️ সংবেদনশীলতা সুরক্ষা বন্ধ করুন" : "🔔 সংবেদনশীলতা সুরক্ষা সক্রিয় করুন"}</span>
+            </button>
+
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">কানেকশন স্ট্যাটাস</span>
+              <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <span className="text-xs font-bold text-slate-700">{dbStatus || "লোকাল ডেমো মোডে সক্রিয়"}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -684,6 +744,42 @@ export default function PatientDashboard() {
             </div>
           </div>
         </div>
+
+        {/* Certified Doctor Homework prescriptions */}
+        {prescriptions && prescriptions.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🩺</span>
+              <h2 className="text-lg font-black text-slate-900 tracking-tight">আজকের থেরাপিস্ট প্রেসক্রিপশন ও হোমওয়ার্ক</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {prescriptions.map((rx) => (
+                <div key={rx.id} className="bg-white border-l-4 border-indigo-600 rounded-2xl p-5 shadow-xs space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="text-sm font-black text-slate-900">{rx.diagnosis}</h4>
+                      <p className="text-[11px] text-slate-400 font-bold">থেরাপিস্ট: {rx.therapist_name} | তারিখ: {rx.date}</p>
+                    </div>
+                    <span className="bg-indigo-50 text-indigo-700 text-[10px] font-black px-2.5 py-0.5 rounded font-mono">
+                      {rx.id}
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-150 text-xs text-slate-700 leading-relaxed font-semibold whitespace-pre-line">
+                    <strong className="text-slate-900 block mb-1">📋 প্র্যাকটিস নির্দেশনাবলি:</strong>
+                    {rx.homework}
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] font-bold border-t border-slate-100 pt-2 text-slate-500">
+                    <span>পরবর্তী সেশন: <strong className="text-indigo-600">{rx.next_visit}</strong></span>
+                    <span>নোট: <strong>{rx.notes}</strong></span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Interactive Audio Practice Playground Widget */}
         <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-6">
