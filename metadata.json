@@ -1,0 +1,6 @@
+{
+  "name": "Speech Therapy Lab",
+  "description": "Speech Therapy & Autism Care Portal and Supabase Database Architect",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

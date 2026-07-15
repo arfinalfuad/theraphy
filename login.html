@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="bn" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>লগইন ও সাইন-আপ | স্পিচ থেরাপি ল্যাব</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for beautiful icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts for premium Bengali typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Hind Siliguri', sans-serif;
+    }
+    .custom-gradient {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #ffffff 100%);
+    }
+    .form-transition {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body class="custom-gradient min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
+
+  <!-- Toast Container for Custom Elegant Notifications -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-md w-full px-4 sm:px-0"></div>
+
+  <!-- Main Container Card -->
+  <div class="bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl border border-sky-100/80 w-full max-w-5xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[600px] transform hover:scale-[1.01] transition-transform duration-300">
+    
+    <!-- Left Side: Brand Showcase & Interactive Info (5 Columns) -->
+    <div class="lg:col-span-5 bg-gradient-to-br from-sky-400 to-blue-600 text-white p-8 sm:p-12 flex flex-col justify-between relative overflow-hidden">
+      <!-- Decorative background circles -->
+      <div class="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+      <div class="absolute -bottom-20 -right-10 w-60 h-60 bg-sky-300/20 rounded-full blur-3xl"></div>
+      
+      <!-- Brand Logo & Header -->
+      <div class="relative z-10 space-y-3">
+        <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-xs px-4 py-2 rounded-2xl border border-white/20">
+          <i class="fa-solid fa-microphone-lines text-yellow-300 text-lg animate-pulse"></i>
+          <span class="text-sm font-bold tracking-wide uppercase">Speech Therapy Lab</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-black leading-tight pt-4">
+          কথা বলা হোক প্রাণবন্ত, <br>যোগাযোগ হোক সাবলীল!
+        </h2>
+        <p class="text-xs sm:text-sm text-sky-100 leading-relaxed font-light">
+          আমাদের উন্নত স্পিচ ও ভাষা অনুশীলন প্ল্যাটফর্মে আপনাকে স্বাগতম। আধুনিক প্রযুক্তি এবং অভিজ্ঞ থেরাপিস্টদের সমন্বয়ে আপনার বা আপনার প্রিয়জনের মুখের জড়তা কাটিয়ে উঠুন।
+        </p>
+      </div>
+
+      <!-- Feature highlights list -->
+      <div class="relative z-10 space-y-4 my-8 lg:my-0">
+        <div class="flex items-start gap-3">
+          <div class="bg-white/15 p-2 rounded-xl border border-white/10 shrink-0">
+            <i class="fa-solid fa-wand-magic-sparkles text-yellow-300"></i>
+          </div>
+          <div>
+            <h4 class="text-xs sm:text-sm font-bold">এআই ভয়েস এনালিসিস ল্যাব</h4>
+            <p class="text-xs text-sky-150 font-light">মিনিটেই আপনার উচ্চারণের নির্ভুলতা স্কোর করুন।</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="bg-white/15 p-2 rounded-xl border border-white/10 shrink-0">
+            <i class="fa-solid fa-user-doctor text-sky-200"></i>
+          </div>
+          <div>
+            <h4 class="text-xs sm:text-sm font-bold">অভিজ্ঞ স্পিচ প্যাথলজিস্ট</h4>
+            <p class="text-xs text-sky-150 font-light">অনলাইন ও সরাসরি ওয়ান-টু-ওয়ান গাইডেন্স সেশন।</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="bg-white/15 p-2 rounded-xl border border-white/10 shrink-0">
+            <i class="fa-solid fa-ranking-star text-amber-300"></i>
+          </div>
+          <div>
+            <h4 class="text-xs sm:text-sm font-bold">কিডস ফ্রেন্ডলি গেম ও প্র্যাকটিস</h4>
+            <p class="text-xs text-sky-150 font-light">শিশুদের আকর্ষণীয় ও সহজ ব্যায়ামের মাধ্যমে অগ্রগতি ট্র্যাকিং।</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom metadata info -->
+      <div class="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] text-sky-100">
+        <span>সংস্করণ ২.৪.০</span>
+        <span>নিরাপদ ক্লাউড কানেকশন দ্বারা সুরক্ষিত</span>
+      </div>
+    </div>
+
+    <!-- Right Side: Forms Container (7 Columns) -->
+    <div class="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center bg-white">
+      
+      <!-- Toggle Tabs Header -->
+      <div class="flex bg-sky-50 p-1.5 rounded-2xl mb-8 max-w-sm mx-auto w-full border border-sky-100">
+        <button id="tab-login" onclick="switchTab('login')" class="flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer bg-white text-blue-600 shadow-sm">
+          <i class="fa-solid fa-right-to-bracket text-xs"></i>
+          <span>লগইন করুন</span>
+        </button>
+        <button id="tab-signup" onclick="switchTab('signup')" class="flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-slate-800">
+          <i class="fa-solid fa-user-plus text-xs"></i>
+          <span>নতুন অ্যাকাউন্ট</span>
+        </button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="form-login" onsubmit="handleLogin(event)" class="space-y-6 form-transition opacity-100 scale-100 block">
+        <div class="space-y-2 text-center lg:text-left">
+          <h3 class="text-xl sm:text-2xl font-black text-slate-900">ফিরে আসায় স্বাগতম!</h3>
+          <p class="text-xs text-slate-400">আপনার নিবন্ধিত ইমেইল ও পাসওয়ার্ড দিয়ে ড্যাশবোর্ডে প্রবেশ করুন</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Email Input -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold text-slate-500 flex items-center gap-1">
+              <i class="fa-regular fa-envelope text-slate-400"></i> ইমেইল এড্রেস
+            </label>
+            <input 
+              type="email" 
+              id="login-email" 
+              required 
+              placeholder="example@mail.com" 
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 text-xs sm:text-sm font-semibold transition-all"
+            >
+          </div>
+
+          <!-- Password Input -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between items-center">
+              <label class="text-xs font-bold text-slate-500 flex items-center gap-1">
+                <i class="fa-solid fa-lock text-slate-400"></i> পাসওয়ার্ড
+              </label>
+              <a href="#" onclick="showToast('পাসওয়ার্ড রিকভারি লিংক আপনার ইমেইলে পাঠানো হবে।', 'info')" class="text-[11px] font-bold text-blue-600 hover:underline">পাসওয়ার্ড ভুলে গেছেন?</a>
+            </div>
+            <div class="relative">
+              <input 
+                type="password" 
+                id="login-password" 
+                required 
+                placeholder="••••••••" 
+                class="w-full px-4 py-3 pr-10 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 text-xs sm:text-sm font-semibold transition-all"
+              >
+              <button type="button" onclick="togglePasswordVisibility('login-password', this)" class="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600">
+                <i class="fa-regular fa-eye text-xs"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          id="btn-login-submit"
+          class="w-full bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white font-black py-3 px-4 rounded-xl shadow-md hover:shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
+        >
+          <span>সুরক্ষিত প্রবেশ করুন</span>
+          <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+        </button>
+      </form>
+
+      <!-- SIGNUP FORM -->
+      <form id="form-signup" onsubmit="handleSignup(event)" class="space-y-5 form-transition opacity-0 scale-95 hidden">
+        <div class="space-y-1.5 text-center lg:text-left">
+          <h3 class="text-xl sm:text-2xl font-black text-slate-900">নতুন থেরাপি অ্যাকাউন্ট খুলুন</h3>
+          <p class="text-xs text-slate-400">সহজেই ৫ মিনিটে ফর্মটি পূরণ করে যুক্ত হোন আমাদের সাথে</p>
+        </div>
+
+        <div class="space-y-3.5">
+          <!-- Full Name Input -->
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-slate-500 flex items-center gap-1">
+              <i class="fa-regular fa-user text-slate-400"></i> পুরো নাম (Full Name)
+            </label>
+            <input 
+              type="text" 
+              id="signup-name" 
+              required 
+              placeholder="আরিফিন ফুয়াদ" 
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 text-xs sm:text-sm font-semibold transition-all"
+            >
+          </div>
+
+          <!-- Email Input -->
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-slate-500 flex items-center gap-1">
+              <i class="fa-regular fa-envelope text-slate-400"></i> ইমেইল এড্রেস
+            </label>
+            <input 
+              type="email" 
+              id="signup-email" 
+              required 
+              placeholder="example@mail.com" 
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 text-xs sm:text-sm font-semibold transition-all"
+            >
+          </div>
+
+          <!-- User Type Dropdown -->
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-slate-500 flex items-center gap-1">
+              <i class="fa-solid fa-users text-slate-400"></i> আপনি কে? (User Type)
+            </label>
+            <select 
+              id="signup-role" 
+              required 
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 text-xs sm:text-sm font-bold transition-all text-slate-700 bg-white"
+            >
+              <option value="patient">রোগী বা অভিভাবক (Patient / Parent)</option>
+              <option value="therapist">সেবাদাতা বা থেরাপিস্ট (Therapist)</option>
+            </select>
+          </div>
+
+          <!-- Password Input -->
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-slate-500 flex items-center gap-1">
+              <i class="fa-solid fa-lock text-slate-400"></i> পাসওয়ার্ড (ন্যূনতম ৬ অক্ষরের)
+            </label>
+            <div class="relative">
+              <input 
+                type="password" 
+                id="signup-password" 
+                required 
+                minlength="6"
+                placeholder="••••••••" 
+                class="w-full px-4 py-2.5 pr-10 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 text-xs sm:text-sm font-semibold transition-all"
+              >
+              <button type="button" onclick="togglePasswordVisibility('signup-password', this)" class="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600">
+                <i class="fa-regular fa-eye text-xs"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          id="btn-signup-submit"
+          class="w-full bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white font-black py-3 px-4 rounded-xl shadow-md hover:shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
+        >
+          <span>নতুন অ্যাকাউন্ট তৈরি করুন</span>
+          <i class="fa-solid fa-user-plus text-xs"></i>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Supabase JS Client library CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script>
+    // ১. সুপাবেস ক্লায়েন্ট ইনিশিয়ালাইজেশন (User-provided credentials automatically integrated)
+    const supabaseUrl = "https://colvsbawsjucvxhavvld.supabase.co";
+    const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNvbHZzYmF3c2p1Y3Z4aGF2dmxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjc0NDksImV4cCI6MjA5OTcwMzQ0OX0.f0NBRcSbqNqaJQwUi5NexXKm9X_ml4mGf78a8Y2quX0";
+    
+    const supabase = supabaseJS.createClient(supabaseUrl, supabaseAnonKey);
+
+    // ২. ট্যাব বা ফর্ম পরিবর্তন করার ফাংশন
+    function switchTab(tab) {
+      const loginTabBtn = document.getElementById('tab-login');
+      const signupTabBtn = document.getElementById('tab-signup');
+      const loginForm = document.getElementById('form-login');
+      const signupForm = document.getElementById('form-signup');
+
+      if (tab === 'login') {
+        // ট্যাব ডিজাইন আপডেট
+        loginTabBtn.className = "flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer bg-white text-blue-600 shadow-sm";
+        signupTabBtn.className = "flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-slate-800";
+        
+        // ফর্ম ট্রানজিশন ও হাইড/শো
+        signupForm.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => {
+          signupForm.classList.add('hidden');
+          loginForm.classList.remove('hidden');
+          setTimeout(() => {
+            loginForm.classList.remove('opacity-0', 'scale-95');
+            loginForm.classList.add('opacity-100', 'scale-100');
+          }, 50);
+        }, 300);
+
+      } else if (tab === 'signup') {
+        // ট্যাব ডিজাইন আপডেট
+        signupTabBtn.className = "flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer bg-white text-emerald-600 shadow-sm";
+        loginTabBtn.className = "flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-slate-800";
+        
+        // ফর্ম ট্রানজিশন ও হাইড/শো
+        loginForm.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => {
+          loginForm.classList.add('hidden');
+          signupForm.classList.remove('hidden');
+          setTimeout(() => {
+            signupForm.classList.remove('opacity-0', 'scale-95');
+            signupForm.classList.add('opacity-100', 'scale-100');
+          }, 50);
+        }, 300);
+      }
+    }
+
+    // ৩. পাসওয়ার্ড শো বা হাইড করার চমৎকার সুবিধা
+    function togglePasswordVisibility(inputId, button) {
+      const input = document.getElementById(inputId);
+      const icon = button.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-regular fa-eye-slash text-xs';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-regular fa-eye text-xs';
+      }
+    }
+
+    // ৪. কাস্টম টোস্ট নোটিফিকেশন সিস্টেম
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      const bgColors = {
+        success: 'bg-emerald-500 border-emerald-600 text-white',
+        error: 'bg-rose-500 border-rose-600 text-white',
+        info: 'bg-blue-500 border-blue-600 text-white'
+      };
+
+      const icons = {
+        success: 'fa-solid fa-circle-check',
+        error: 'fa-solid fa-triangle-exclamation',
+        info: 'fa-solid fa-circle-info'
+      };
+
+      toast.className = `${bgColors[type]} px-4 py-3.5 rounded-2xl border shadow-lg flex items-start gap-3 transform translate-y-2 opacity-0 transition-all duration-300 max-w-sm w-full`;
+      toast.innerHTML = `
+        <i class="${icons[type]} text-lg shrink-0 mt-0.5"></i>
+        <div class="flex-1">
+          <p class="text-xs sm:text-sm font-bold leading-relaxed">${message}</p>
+        </div>
+        <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white transition-opacity"><i class="fa-solid fa-xmark text-xs"></i></button>
+      `;
+
+      container.appendChild(toast);
+      
+      // ট্রানজিশন অ্যানিমেশন
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 50);
+
+      // ৩.৫ সেকেন্ড পর স্বয়ংক্রিয়ভাবে মুছে যাবে
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-[-10px]');
+        setTimeout(() => toast.remove(), 300);
+      }, 4500);
+    }
+
+    // ৫. সুপাবেস সাইন-আপ প্রসেসিং ফাংশন
+    async function handleSignup(e) {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const role = document.getElementById('signup-role').value;
+      const submitBtn = document.getElementById('btn-signup-submit');
+
+      // লোডার স্টেট পরিবর্তন
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin mr-2"></i> একাউন্ট তৈরি হচ্ছে...`;
+
+      try {
+        // সুপাবেসে অথেন্টিকেশনে রেজিস্টার করা (সাথে ইউজার মেটাডাটা পাঠানো)
+        const { data, error } = await supabase.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            data: {
+              full_name: name,
+              user_type: role
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        // সুপাবেস ইমেইল ভেরিফিকেশন চেক
+        if (data.user && data.session === null) {
+          showToast("নিবন্ধন সফল হয়েছে! অনুগ্রহ করে আপনার ইমেইল ইনবক্স চেক করে অ্যাক্টিভেশন লিংক কনফার্ম করুন।", "success");
+        } else {
+          showToast("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! ড্যাশবোর্ডে প্রবেশ হচ্ছে...", "success");
+          setTimeout(() => {
+            redirectUserBasedOnRole(role);
+          }, 1500);
+        }
+      } catch (err) {
+        console.error("Signup error:", err);
+        showToast("নিবন্ধন ব্যর্থ হয়েছে: " + (err.message || "দয়া করে তথ্যগুলো পুনরায় যাচাই করুন"), "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>নতুন অ্যাকাউন্ট তৈরি করুন</span> <i class="fa-solid fa-user-plus text-xs"></i>`;
+      }
+    }
+
+    // ৬. সুপাবেস লগইন প্রসেসিং ফাংশন
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const submitBtn = document.getElementById('btn-login-submit');
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin mr-2"></i> তথ্য যাচাই হচ্ছে...`;
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+        if (error) throw error;
+
+        showToast("নিরাপদ প্রমাণীকরণ সফল! ডাটাবেস রোল চেক করা হচ্ছে...", "success");
+        
+        // ইউজারের সঠিক রোল বা টাইপ কুয়েরি করা
+        const user = data.user;
+        if (user) {
+          const { data: profile, error: profileErr } = await supabase
+            .from("users")
+            .select("user_type")
+            .eq("id", user.id)
+            .single();
+
+          if (profileErr || !profile) {
+            console.warn("User type database row missing, falling back to metadata...");
+            // যদি ডাটাবেস সিঙ্ক না থাকে, তবে মেটাডাটা থেকে ফলব্যাক ট্রাই করা হবে
+            const role = user.user_metadata?.user_type || 'patient';
+            redirectUserBasedOnRole(role);
+          } else {
+            redirectUserBasedOnRole(profile.user_type);
+          }
+        }
+      } catch (err) {
+        console.error("Login error:", err);
+        showToast("লগইন ব্যর্থ হয়েছে: " + (err.message || "সঠিক ইমেইল ও পাসওয়ার্ড প্রদান করুন"), "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>সুরক্ষিত প্রবেশ করুন</span> <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>`;
+      }
+    }
+
+    // ৭. রোল অনুযায়ী ডাইনামিক রিডাইরেকশন লজিক
+    function redirectUserBasedOnRole(role) {
+      if (role === 'patient') {
+        showToast("পেশেন্ট ড্যাশবোর্ডে নিয়ে যাওয়া হচ্ছে...", "info");
+        setTimeout(() => {
+          window.location.href = "patient_dashboard.html";
+        }, 1200);
+      } else if (role === 'therapist') {
+        showToast("থেরাপিস্ট ড্যাশবোর্ডে নিয়ে যাওয়া হচ্ছে...", "info");
+        setTimeout(() => {
+          window.location.href = "therapist_dashboard.html";
+        }, 1200);
+      } else if (role === 'admin') {
+        showToast("এডমিন ড্যাশবোর্ডে নিয়ে যাওয়া হচ্ছে...", "info");
+        setTimeout(() => {
+          window.location.href = "admin_dashboard.html";
+        }, 1200);
+      } else {
+        showToast("ড্যাশবোর্ডে নিয়ে যাওয়া হচ্ছে...", "info");
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1200);
+      }
+    }
+  </script>
+</body>
+</html>
