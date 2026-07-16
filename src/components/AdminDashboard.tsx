@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import PublicLandingPage, { LandingPageConfig, Therapist, ServiceCard } from "./PublicLandingPage";
+import PageBuilder from "./PageBuilder";
 
 interface AdminDashboardProps {
   therapists: Therapist[];
@@ -59,6 +60,7 @@ function DraggableSectionItem({
   isActive,
   onClick
 }: { 
+  key?: any;
   id: string; 
   index: number; 
   name: string; 
@@ -208,6 +210,7 @@ export default function AdminDashboard({
   triggerToast
 }: AdminDashboardProps) {
   const [adminTab, setAdminTab] = useState<"page_builder" | "therapist_manager" | "security_audit">("page_builder");
+  const [builderMode, setBuilderMode] = useState<"classic" | "visual">("visual");
 
   // Local Page Config State with dynamic pages and menu link structures
   const [localConfig, setLocalConfig] = useState<LandingPageConfig>(() => {
@@ -216,6 +219,7 @@ export default function AdminDashboard({
       themeBgColor: pageConfig.themeBgColor || "#f8fafc",
       themeTextColor: pageConfig.themeTextColor || "#0f172a",
       ctaUrl: pageConfig.ctaUrl || "#/patient",
+      visualSections: pageConfig.visualSections || [],
       sectionsOrder: pageConfig.sectionsOrder || ["hero", "services", "therapists", "video", "aac", "custom_code", "contact", "footer"],
       sectionsVisibility: pageConfig.sectionsVisibility || {
         hero: true,
@@ -591,7 +595,37 @@ export default function AdminDashboard({
         </div>
 
         {/* Tab Selectors */}
-        <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs self-start sm:self-auto font-sans font-bold">
+        <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs self-start sm:self-auto font-sans font-bold items-center">
+          {adminTab === "page_builder" && (
+            <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5 mr-2">
+              <button
+                type="button"
+                id="builder-mode-visual"
+                onClick={() => setBuilderMode("visual")}
+                className={`px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                  builderMode === "visual"
+                    ? "bg-indigo-600 text-white shadow-xs font-black"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <Sparkles className="w-3 h-3 text-indigo-400" />
+                <span>ভিজ্যুয়াল এআই বিল্ডার</span>
+              </button>
+              <button
+                type="button"
+                id="builder-mode-classic"
+                onClick={() => setBuilderMode("classic")}
+                className={`px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                  builderMode === "classic"
+                    ? "bg-indigo-600 text-white shadow-xs font-black"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <Settings className="w-3 h-3" />
+                <span>ক্লাসিক সেটিংস</span>
+              </button>
+            </div>
+          )}
           <button
             id="admin-tab-page-builder"
             onClick={() => setAdminTab("page_builder")}
@@ -635,7 +669,21 @@ export default function AdminDashboard({
 
       {/* Main Content Layout */}
       {adminTab === "page_builder" ? (
-        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-[calc(100vh-73px)]">
+        builderMode === "visual" ? (
+          <PageBuilder
+            initialSections={localConfig.visualSections}
+            onSave={async (sections) => {
+              setLocalConfig(prev => {
+                const updated = { ...prev, visualSections: sections };
+                onSavePageConfig(updated);
+                return updated;
+              });
+              triggerToast("পেজ বিল্ডার লেআউট সফলভাবে ডাটাবেজে সেভ করা হয়েছে!");
+            }}
+            triggerToast={triggerToast}
+          />
+        ) : (
+          <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-[calc(100vh-73px)]">
           
           {/* LEFT SIDEBAR: Shopify Panel (Fixed width, Scrollable) */}
           <aside className="w-full lg:w-[430px] bg-slate-900 text-white flex flex-col shrink-0 border-r border-slate-950 shadow-2xl h-full overflow-hidden">
@@ -1358,6 +1406,7 @@ export default function AdminDashboard({
           </main>
 
         </div>
+        )
       ) : null}
 
       {/* TAB 2: CLINICAL THERAPIST DIRECTORY MANAGER */}

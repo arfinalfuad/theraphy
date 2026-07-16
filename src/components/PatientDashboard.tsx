@@ -264,7 +264,7 @@ export default function PatientDashboard({ onNavigate, prescriptions = [] }: Pat
 
   // Call duration timer
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: any;
     if (callActive) {
       timer = setInterval(() => {
         setCallDuration(prev => prev + 1);

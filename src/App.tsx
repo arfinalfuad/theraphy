@@ -259,7 +259,7 @@ export default function App() {
       themeBgColor: "#f8fafc",
       themeTextColor: "#0f172a",
       fontFamily: "Inter",
-      youtubeEmbed: "https://www.youtube.com/embed/gAnS9xZ5W0E",
+      youtubeEmbed: "https://www.youtube.com/embed/Mp7X0iaOdTk",
       ctaText: "অ্যাপয়েন্টমেন্ট বুকিং শুরু করুন",
       ctaUrl: "#/patient",
       sectionsOrder: ["hero", "services", "therapists", "video", "aac", "custom_code", "contact", "footer"],

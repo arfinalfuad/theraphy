@@ -152,7 +152,7 @@ export default function TherapistDashboard({
 
   // Call duration counter
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: any;
     if (callActive) {
       timer = setInterval(() => {
         setCallDuration(prev => prev + 1);
